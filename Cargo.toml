@@ -14,3 +14,7 @@ include = ["src/*"]
 
 [dependencies]
 quick-xml = "0.36"
+
+[[test]]
+name = "all"
+path = "tests/tests.rs"
