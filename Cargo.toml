@@ -10,7 +10,7 @@ license = "MPL-2"
 rust-version = "1.65"
 edition = "2021"
 
-include = ["src/*"]
+include = ["src/*", "LICENSE", "README.md"]
 
 [dependencies]
 quick-xml = "0.36"
