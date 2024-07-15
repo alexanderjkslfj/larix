@@ -60,19 +60,19 @@ impl From<EmptyElement> for Element {
     }
 }
 
-impl Display for EmptyElement {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let str = get_empty_tag(self);
-        write!(f, "{str}")
-    }
-}
-
 /** Empty element ```<tag attr="value" />```. */
 pub struct EmptyElement {
     /** Tag name of the element. */
     pub name: String,
     /** Attributes of the element. */
     pub attributes: HashMap<String, String>,
+}
+
+impl Display for EmptyElement {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str = get_empty_tag(self);
+        write!(f, "{str}")
+    }
 }
 
 impl TryFrom<Element> for EmptyElement {
