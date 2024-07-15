@@ -7,6 +7,7 @@ use quick_xml::{
     Error, Reader,
 };
 
+/** Any XML item. May be a comment, an element, a bit of text, ... */
 pub enum XmlItem {
     /** Element ```<tag attr="value">...</tag>```. */
     Element(Element),
@@ -26,6 +27,7 @@ pub enum XmlItem {
     PI(String),
 }
 
+/** Element ```<tag attr="value">...</tag>```. */
 pub struct Element {
     /** Tag name of the element. */
     pub name: String,
@@ -65,6 +67,7 @@ impl Display for EmptyElement {
     }
 }
 
+/** Empty element ```<tag attr="value" />```. */
 pub struct EmptyElement {
     /** Tag name of the element. */
     pub name: String,
