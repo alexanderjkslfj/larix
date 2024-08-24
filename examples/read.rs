@@ -8,7 +8,11 @@ pub fn main() {
     for item in &items {
         match item {
             Item::Element(element) => {
-                println!("Found an element with {} children! Its tag name is \"{}\".", element.children.len(), element.name);
+                println!(
+                    "Found an element with {} children! Its tag name is \"{}\".",
+                    element.children.len(),
+                    element.name
+                );
             }
             Item::Text(text) => {
                 println!("Found some text. It says \"{}\"!", text);
@@ -17,9 +21,12 @@ pub fn main() {
                 println!("Found a comment. Its raw XML looks like this: {}", item);
             }
             Item::EmptyElement(element) => {
-                println!("Found an empty element. Is it happy? {}!", element.attributes.get("happy").unwrap());
+                println!(
+                    "Found an empty element. Is it happy? {}!",
+                    element.attributes.get("happy").unwrap()
+                );
             }
-            _ => println!("Found an unexpected item.")
+            _ => println!("Found an unexpected item."),
         };
     }
 }
