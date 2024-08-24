@@ -4,8 +4,10 @@ use quick_xml::{
     errors::IllFormedError,
     events::{attributes::Attribute, BytesStart, Event},
     name::QName,
-    Error, Reader,
+    Reader,
 };
+
+pub use quick_xml::Error;
 
 /** Any XML item. May be a comment, an element, a bit of text, ... */
 pub enum XmlItem {
@@ -331,7 +333,7 @@ fn u8_to_string(u8: &[u8]) -> Result<String, FromUtf8Error> {
     String::from_utf8(u8.to_vec())
 }
 
-fn get_all_events(xml: &str, trim: bool) -> Result<Vec<Event>, quick_xml::Error> {
+fn get_all_events(xml: &str, trim: bool) -> Result<Vec<Event>, Error> {
     let mut events = Vec::new();
 
     let mut reader = Reader::from_str(xml);
