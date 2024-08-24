@@ -1,15 +1,15 @@
 #[cfg(test)]
 mod tests {
-    use larix::XmlItem;
+    use larix::Item;
 
     #[test]
     fn test_text() {
         const RAW: &str = "abcxyz";
 
-        let items = XmlItem::from_str(RAW).unwrap();
+        let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
         let inner = match &items[0] {
-            XmlItem::Text(e) => e,
+            Item::Text(e) => e,
             _ => panic!("Item is of wrong type."),
         };
         assert_eq!(items[0].to_string(), RAW);
@@ -20,10 +20,10 @@ mod tests {
     fn test_cdata() {
         const RAW: &str = "<![CDATA[abcxyz]]>";
 
-        let items = XmlItem::from_str(RAW).unwrap();
+        let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
         let inner = match &items[0] {
-            XmlItem::CData(e) => e,
+            Item::CData(e) => e,
             _ => panic!("Item is of wrong type."),
         };
         assert_eq!(items[0].to_string(), RAW);
@@ -34,10 +34,10 @@ mod tests {
     fn test_comment() {
         const RAW: &str = "<!-- abcxyz -->";
 
-        let items = XmlItem::from_str(RAW).unwrap();
+        let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
         let inner = match &items[0] {
-            XmlItem::Comment(e) => e,
+            Item::Comment(e) => e,
             _ => panic!("Item is of wrong type."),
         };
         assert_eq!(items[0].to_string(), RAW);
@@ -50,10 +50,10 @@ mod tests {
      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">"#;
 
-        let items = XmlItem::from_str(RAW).unwrap();
+        let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
         let inner: &String = match &items[0] {
-            XmlItem::DocType(e) => e,
+            Item::DocType(e) => e,
             _ => panic!("Item is of wrong type."),
         };
         assert_eq!(items[0].to_string(), RAW);
@@ -69,10 +69,10 @@ mod tests {
     fn test_decl() {
         const RAW: &str = r#"<?xml version="1.0" encoding="UTF-8" standalone="no"?>"#;
 
-        let items = XmlItem::from_str(RAW).unwrap();
+        let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
         let inner = match &items[0] {
-            XmlItem::Decl(e) => e,
+            Item::Decl(e) => e,
             _ => panic!("Item is of wrong type."),
         };
         assert_eq!(items[0].to_string(), RAW);
@@ -86,10 +86,10 @@ mod tests {
     fn test_pi() {
         const RAW: &str = r#"<?notxml something="else" ?>"#;
 
-        let items = XmlItem::from_str(RAW).unwrap();
+        let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
         let inner = match &items[0] {
-            XmlItem::PI(e) => e,
+            Item::PI(e) => e,
             _ => panic!("Item is of wrong type."),
         };
         let text = items[0].to_string();
@@ -101,10 +101,10 @@ mod tests {
     fn test_element() {
         const RAW: &str = "<a></a>";
 
-        let items = XmlItem::from_str(RAW).unwrap();
+        let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
         let inner = match &items[0] {
-            XmlItem::Element(e) => e,
+            Item::Element(e) => e,
             _ => panic!("Item is of wrong type."),
         };
         assert_eq!(inner.name, "a");
@@ -118,10 +118,10 @@ mod tests {
     fn test_empty_element() {
         const RAW: &str = "<a />";
 
-        let items = XmlItem::from_str(RAW).unwrap();
+        let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
         let inner = match &items[0] {
-            XmlItem::EmptyElement(e) => e,
+            Item::EmptyElement(e) => e,
             _ => panic!("Item is of wrong type."),
         };
         assert_eq!(inner.name, "a");
@@ -134,10 +134,10 @@ mod tests {
     fn test_element_with_attrs() {
         const RAW: &str = r#"<xyz tree="oak" material="wood"></xyz>"#;
 
-        let items = XmlItem::from_str(RAW).unwrap();
+        let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
         let inner = match &items[0] {
-            XmlItem::Element(e) => e,
+            Item::Element(e) => e,
             _ => panic!("Item is of wrong type."),
         };
         assert_eq!(inner.name, "xyz");
@@ -155,10 +155,10 @@ mod tests {
     fn test_empty_element_with_attrs() {
         const RAW: &str = r#"<xyz tree="oak" material="wood" />"#;
 
-        let items = XmlItem::from_str(RAW).unwrap();
+        let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
         let item = match &items[0] {
-            XmlItem::EmptyElement(e) => e,
+            Item::EmptyElement(e) => e,
             _ => panic!("Item is of wrong type."),
         };
         assert_eq!(item.name, "xyz");
@@ -173,10 +173,10 @@ mod tests {
     fn test_nesting() {
         const RAW: &str = "<a><b><c></c></b><c></c></a>";
 
-        let items = XmlItem::from_str(RAW).unwrap();
+        let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
         let inner = match &items[0] {
-            XmlItem::Element(e) => e,
+            Item::Element(e) => e,
             _ => panic!("Item is of wrong type."),
         };
         assert_eq!(inner.name, "a");

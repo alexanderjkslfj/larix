@@ -10,7 +10,7 @@ use quick_xml::{
 pub use quick_xml::Error;
 
 /** Any XML item. May be a comment, an element, a bit of text, ... */
-pub enum XmlItem {
+pub enum Item {
     /** Element ```<tag attr="value">...</tag>```. */
     Element(Element),
     /** Empty element ```<tag attr="value" />```. */
@@ -34,7 +34,7 @@ pub struct Element {
     /** Tag name of the element. */
     pub name: String,
     /** Items between the start and end tags of the element. */
-    pub children: Vec<XmlItem>,
+    pub children: Vec<Item>,
     /** Attributes of the element. */
     pub attributes: HashMap<String, String>,
 }
@@ -44,7 +44,7 @@ impl Display for Element {
         let str = format!(
             "{}{}{}",
             get_start_tag(self),
-            XmlItem::to_str(&self.children),
+            Item::to_str(&self.children),
             get_end_tag(self)
         );
 
@@ -92,9 +92,9 @@ impl TryFrom<Element> for EmptyElement {
     }
 }
 
-impl XmlItem {
+impl Item {
     /** Stringifies a list of XML items into valid XML. */
-    pub fn to_str(xml: &Vec<XmlItem>) -> String {
+    pub fn to_str(xml: &Vec<Item>) -> String {
         let mut result = String::new();
         for item in xml {
             result.push_str(&item.to_string())
@@ -118,8 +118,8 @@ impl XmlItem {
         Err(Error::NonDecodable(Some(res.err().unwrap().utf8_error())))
     }
 
-    fn from_events(events: &[&Event]) -> Result<Vec<XmlItem>, Error> {
-        let mut children: Vec<XmlItem> = Vec::new();
+    fn from_events(events: &[&Event]) -> Result<Vec<Item>, Error> {
+        let mut children: Vec<Item> = Vec::new();
 
         let mut i = 0;
         while i < events.len() {
@@ -129,42 +129,42 @@ impl XmlItem {
                     let Ok(str) = str_res else {
                         return Self::non_decodable(str_res);
                     };
-                    children.push(XmlItem::Text(str));
+                    children.push(Item::Text(str));
                 }
                 Event::Comment(e) => {
                     let str_res = u8_to_string(&e);
                     let Ok(str) = str_res else {
                         return Self::non_decodable(str_res);
                     };
-                    children.push(XmlItem::Comment(str));
+                    children.push(Item::Comment(str));
                 }
                 Event::DocType(e) => {
                     let str_res = u8_to_string(&e);
                     let Ok(str) = str_res else {
                         return Self::non_decodable(str_res);
                     };
-                    children.push(XmlItem::DocType(str));
+                    children.push(Item::DocType(str));
                 }
                 Event::CData(e) => {
                     let str_res = u8_to_string(&e);
                     let Ok(str) = str_res else {
                         return Self::non_decodable(str_res);
                     };
-                    children.push(XmlItem::CData(str));
+                    children.push(Item::CData(str));
                 }
                 Event::Decl(e) => {
                     let str_res = u8_to_string(&e);
                     let Ok(str) = str_res else {
                         return Self::non_decodable(str_res);
                     };
-                    children.push(XmlItem::Decl(str));
+                    children.push(Item::Decl(str));
                 }
                 Event::PI(e) => {
                     let str_res = u8_to_string(&e);
                     let Ok(str) = str_res else {
                         return Self::non_decodable(str_res);
                     };
-                    children.push(XmlItem::PI(str));
+                    children.push(Item::PI(str));
                 }
                 Event::Empty(e) => {
                     let name_res = get_name(e);
@@ -176,7 +176,7 @@ impl XmlItem {
                         return Self::non_decodable(attr_res);
                     };
 
-                    children.push(XmlItem::EmptyElement(EmptyElement { name, attributes }))
+                    children.push(Item::EmptyElement(EmptyElement { name, attributes }))
                 }
                 Event::Start(e) => {
                     let name_res = get_name(e);
@@ -231,7 +231,7 @@ impl XmlItem {
                         nested_events.push(events[i]);
                     }
                     let el_children = Self::from_events(&nested_events[..])?;
-                    children.push(XmlItem::Element(Element {
+                    children.push(Item::Element(Element {
                         name,
                         attributes,
                         children: el_children,
@@ -257,7 +257,7 @@ impl XmlItem {
     }
 }
 
-impl Display for XmlItem {
+impl Display for Item {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let str = &match self {
             Self::Element(element) => element.to_string(),
