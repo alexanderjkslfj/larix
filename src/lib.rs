@@ -39,6 +39,16 @@ pub struct Element {
     pub attributes: HashMap<String, String>,
 }
 
+impl Element {
+    pub fn new(name: String) -> Self {
+        Element {
+            name,
+            children: Vec::new(),
+            attributes: HashMap::new(),
+        }
+    }
+}
+
 impl Display for Element {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let str = format!(
@@ -70,6 +80,15 @@ pub struct EmptyElement {
     pub attributes: HashMap<String, String>,
 }
 
+impl EmptyElement {
+    pub fn new(name: String) -> Self {
+        EmptyElement {
+            name,
+            attributes: HashMap::new(),
+        }
+    }
+}
+
 impl Display for EmptyElement {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let str = get_empty_tag(self);
@@ -93,6 +112,13 @@ impl TryFrom<Element> for EmptyElement {
 }
 
 impl Item {
+    pub fn new_element(name: String) -> Item {
+        Item::Element(Element::new(name))
+    }
+    pub fn new_empty_element(name: String) -> Item {
+        Item::EmptyElement(EmptyElement::new(name))
+    }
+
     /** Stringifies a list of XML items into valid XML. */
     pub fn to_str(xml: &Vec<Item>) -> String {
         let mut result = String::new();
