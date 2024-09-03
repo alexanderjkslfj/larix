@@ -24,6 +24,67 @@ impl Element {
         }
     }
 
+    /** Get all descendants matching the predicate.
+    ```rust
+    // Example of finding all elements with tag name "a":
+    let xml = "<element><a></a><b><a></a></b><c>text</c></element>";
+
+    # use larix::*;
+    let Item::Element(element) = &parse(&xml)?[0] else {
+        panic!();
+    };
+
+    let a_elements = element.find_descendants(&|item| {
+        let Item::Element(el) = item else {
+            return false;
+        };
+        el.name == "a"
+    });
+
+    assert_eq!(a_elements.len(), 2);
+    # Ok::<(), Error>(())
+    ```*/
+    pub fn find_descendants(&self, predicate: &impl Fn(&Item) -> bool) -> Vec<&Item> {
+        let mut result: Vec<&Item> = self
+            .children
+            .iter()
+            .filter(|item| predicate(item))
+            .collect();
+
+        for child in &self.children {
+            let Item::Element(element) = child else {
+                continue;
+            };
+            result.append(&mut element.find_descendants(predicate));
+        }
+
+        result
+    }
+
+    /** Get the text content of all text items within the element.
+    ```xml
+    <element>Hello<child>World</child></element>
+    ```
+    The above would result in "HelloWorld".*/
+    pub fn get_text_content(self: &Self) -> String {
+        let mut content = String::new();
+
+        for child in &self.children {
+            match child {
+                Item::Text(text) => {
+                    content.push_str(&text);
+                }
+                Item::Element(element) => {
+                    content.push_str(&element.get_text_content());
+                }
+                _ => (),
+            }
+        }
+
+        content
+    }
+
+    /** Get all children which are elements. */
     pub fn get_child_elements(self: &Self) -> Vec<&Element> {
         let mut elements = Vec::new();
 
@@ -37,9 +98,19 @@ impl Element {
         elements
     }
 
+    /** Get all items at a certain depth within the element.
+    ```xml
+    <element>
+        <item depth="1">
+            <item at-depth="2">
+                This text is at depth 3.
+            </item>
+        </item>
+    </element>
+    ```*/
     pub fn get_decendants_at_depth(self: &Self, depth: u8) -> Vec<&Item> {
         if depth == 0 {
-            panic!("Depth must be above zero.");
+            panic!("Depth cannot be zero.");
         }
         if depth == 1 {
             return self.children.iter().collect();
