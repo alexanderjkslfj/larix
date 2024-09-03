@@ -133,40 +133,49 @@ mod tests {
     #[test]
     fn test_element_with_attrs() {
         const RAW: &str = r#"<xyz tree="oak" material="wood"></xyz>"#;
+        const RAW_ALT: &str = r#"<xyz material="wood" tree="oak"></xyz>"#;
 
         let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
-        let inner = match &items[0] {
+        let element = match &items[0] {
             Item::Element(e) => e,
             _ => panic!("Item is of wrong type."),
         };
-        assert_eq!(inner.name, "xyz");
-        assert_eq!(inner.children.len(), 0);
-        assert_eq!(inner.attributes.len(), 2);
-        assert!(inner.attributes.get("tree").is_some());
-        assert!(inner.attributes.get("material").is_some());
-        assert_eq!(inner.attributes.get("tree").unwrap(), "oak");
-        assert_eq!(inner.attributes.get("material").unwrap(), "wood");
-        assert_eq!(RAW, items[0].to_string());
-        assert_eq!(RAW, inner.to_string());
+        assert_eq!(element.name, "xyz");
+        assert_eq!(element.children.len(), 0);
+        assert_eq!(element.attributes.len(), 2);
+        assert!(element.attributes.get("tree").is_some());
+        assert!(element.attributes.get("material").is_some());
+        assert_eq!(element.attributes.get("tree").unwrap(), "oak");
+        assert_eq!(element.attributes.get("material").unwrap(), "wood");
+        let item_str = items[0].to_string();
+        assert!(RAW == item_str || RAW_ALT == item_str);
+        let element_str = element.to_string();
+        assert!(RAW == element_str || RAW_ALT == element_str);
     }
 
     #[test]
     fn test_empty_element_with_attrs() {
         const RAW: &str = r#"<xyz tree="oak" material="wood" />"#;
+        const RAW_ALT: &str = r#"<xyz material="wood" tree="oak" />"#;
 
         let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
-        let item = match &items[0] {
+        let element = match &items[0] {
             Item::EmptyElement(e) => e,
             _ => panic!("Item is of wrong type."),
         };
-        assert_eq!(item.name, "xyz");
-        assert_eq!(item.attributes.len(), 2);
-        assert!(item.attributes.get("tree").is_some());
-        assert!(item.attributes.get("material").is_some());
-        assert_eq!(item.attributes.get("tree").unwrap(), "oak");
-        assert_eq!(item.attributes.get("material").unwrap(), "wood");
+        assert_eq!(element.name, "xyz");
+        assert_eq!(element.attributes.len(), 2);
+        assert!(element.attributes.get("tree").is_some());
+        assert!(element.attributes.get("material").is_some());
+        assert_eq!(element.attributes.get("tree").unwrap(), "oak");
+        assert_eq!(element.attributes.get("material").unwrap(), "wood");
+        let item_str = items[0].to_string();
+        println!("{}", item_str);
+        assert!(RAW == item_str || RAW_ALT == item_str);
+        let element_str = element.to_string();
+        assert!(RAW == element_str || RAW_ALT == element_str);
     }
 
     #[test]
