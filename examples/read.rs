@@ -1,9 +1,9 @@
-use larix::Item;
+use larix::{parse, Item};
 
 pub fn main() {
     const XML: &str = r#"<first><child></child><child></child></first>second<!-- third --><fourth happy="Yes" />"#;
 
-    let items = Item::from_str(XML).unwrap();
+    let items = parse(XML).unwrap();
 
     for item in &items {
         match item {

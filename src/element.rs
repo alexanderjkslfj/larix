@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fmt::Display};
 
-use crate::Item;
+use crate::{stringify, Item};
 
 /** Element ```<tag attr="value">...</tag>``` or ```<tag attr="value" />```. */
 pub struct Element {
@@ -71,7 +71,7 @@ impl Display for Element {
             format!(
                 "{}{}{}",
                 get_start_tag(self),
-                Item::to_str(&self.children),
+                stringify(&self.children),
                 get_end_tag(self)
             )
         };

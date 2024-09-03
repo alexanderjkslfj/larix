@@ -1,11 +1,11 @@
-use larix::Item;
+use larix::{parse, stringify, Item};
 
 pub fn main() {
     const XML: &str =
         r#"<first><bob></bob><alice></alice></first>second<!-- third --><fourth happy="Yes" />"#;
 
     // parse xml
-    let mut items = Item::from_str(XML).unwrap();
+    let mut items = parse(XML).unwrap();
 
     // remove last item
     items.pop();
@@ -34,5 +34,5 @@ pub fn main() {
         };
     }
 
-    println!("{}", Item::to_str(&items));
+    println!("{}", stringify(&items));
 }
