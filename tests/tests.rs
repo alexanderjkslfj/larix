@@ -191,4 +191,18 @@ mod tests {
         assert_eq!(inner.name, "a");
         assert_eq!(inner.children.len(), 2);
     }
+
+    #[test]
+    fn test_descendants_at_depth() {
+        const RAW: &str = "<a><b><c></c></b><c></c></a>";
+
+        let items = Item::from_str(RAW).unwrap();
+        assert_eq!(items.len(), 1);
+        let inner = match &items[0] {
+            Item::Element(e) => e,
+            _ => panic!("Item is of wrong type."),
+        };
+        assert_eq!(inner.get_decendants_at_depth(1).len(), 2);
+        assert_eq!(inner.get_decendants_at_depth(2).len(), 1);
+    }
 }

@@ -20,6 +20,42 @@ impl Element {
             attributes: HashMap::new(),
         }
     }
+
+    pub fn get_child_elements(self: &Self) -> Vec<&Element> {
+        let mut elements = Vec::new();
+
+        for child in &self.children {
+            let Item::Element(element) = child else {
+                continue;
+            };
+            elements.push(element)
+        }
+
+        elements
+    }
+
+    pub fn get_decendants_at_depth(self: &Self, depth: u8) -> Vec<&Item> {
+        if depth == 0 {
+            panic!("Depth must be above zero.");
+        }
+        if depth == 1 {
+            return self.children.iter().collect();
+        }
+
+        self.children
+            .iter()
+            .filter_map(|item| {
+                let Item::Element(element) = item else {
+                    return None;
+                };
+                Some(element.get_decendants_at_depth(depth - 1))
+            })
+            .reduce(|mut acc, mut curr| {
+                acc.append(&mut curr);
+                acc
+            })
+            .unwrap_or(Vec::new())
+    }
 }
 
 impl Display for Element {
