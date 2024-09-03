@@ -103,15 +103,16 @@ mod tests {
 
         let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
-        let inner = match &items[0] {
+        let element = match &items[0] {
             Item::Element(e) => e,
             _ => panic!("Item is of wrong type."),
         };
-        assert_eq!(inner.name, "a");
-        assert_eq!(inner.attributes.len(), 0);
-        assert_eq!(inner.children.len(), 0);
+        assert_eq!(element.self_closing, false);
+        assert_eq!(element.name, "a");
+        assert_eq!(element.attributes.len(), 0);
+        assert_eq!(element.children.len(), 0);
         assert_eq!(RAW, items[0].to_string());
-        assert_eq!(RAW, inner.to_string());
+        assert_eq!(RAW, element.to_string());
     }
 
     #[test]
@@ -120,14 +121,15 @@ mod tests {
 
         let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
-        let inner = match &items[0] {
-            Item::EmptyElement(e) => e,
+        let element = match &items[0] {
+            Item::Element(e) => e,
             _ => panic!("Item is of wrong type."),
         };
-        assert_eq!(inner.name, "a");
-        assert_eq!(inner.attributes.len(), 0);
+        assert_eq!(element.self_closing, true);
+        assert_eq!(element.name, "a");
+        assert_eq!(element.attributes.len(), 0);
         assert_eq!(items[0].to_string(), RAW);
-        assert_eq!(inner.to_string(), RAW);
+        assert_eq!(element.to_string(), RAW);
     }
 
     #[test]
@@ -141,6 +143,7 @@ mod tests {
             Item::Element(e) => e,
             _ => panic!("Item is of wrong type."),
         };
+        assert_eq!(element.self_closing, false);
         assert_eq!(element.name, "xyz");
         assert_eq!(element.children.len(), 0);
         assert_eq!(element.attributes.len(), 2);
@@ -162,9 +165,10 @@ mod tests {
         let items = Item::from_str(RAW).unwrap();
         assert_eq!(items.len(), 1);
         let element = match &items[0] {
-            Item::EmptyElement(e) => e,
+            Item::Element(e) => e,
             _ => panic!("Item is of wrong type."),
         };
+        assert_eq!(element.self_closing, true);
         assert_eq!(element.name, "xyz");
         assert_eq!(element.attributes.len(), 2);
         assert!(element.attributes.get("tree").is_some());

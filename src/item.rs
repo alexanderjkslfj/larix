@@ -7,14 +7,12 @@ use quick_xml::{
     Reader,
 };
 
-use crate::{Element, EmptyElement, Error};
+use crate::{Element, Error};
 
 /** Any XML item. May be a comment, an element, a bit of text, ... */
 pub enum Item {
-    /** Element ```<tag attr="value">...</tag>```. */
+    /** Element ```<tag attr="value">...</tag>``` or ```<tag attr="value" />```. */
     Element(Element),
-    /** Empty element ```<tag attr="value" />```. */
-    EmptyElement(EmptyElement),
     /** Comment ```<!-- ... -->```. */
     Comment(String),
     /** Escaped character data between tags. */
@@ -32,9 +30,6 @@ pub enum Item {
 impl Item {
     pub fn new_element(name: String) -> Item {
         Item::Element(Element::new(name))
-    }
-    pub fn new_empty_element(name: String) -> Item {
-        Item::EmptyElement(EmptyElement::new(name))
     }
 
     /** Stringifies a list of XML items into valid XML. */
@@ -120,7 +115,12 @@ impl Item {
                         return Self::non_decodable(attr_res);
                     };
 
-                    children.push(Item::EmptyElement(EmptyElement { name, attributes }))
+                    children.push(Item::Element(Element {
+                        name,
+                        attributes,
+                        self_closing: true,
+                        children: Vec::new(),
+                    }))
                 }
                 Event::Start(e) => {
                     let name_res = get_name(e);
@@ -178,6 +178,7 @@ impl Item {
                     children.push(Item::Element(Element {
                         name,
                         attributes,
+                        self_closing: false,
                         children: el_children,
                     }));
                 }
@@ -205,7 +206,6 @@ impl Display for Item {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let str = &match self {
             Self::Element(element) => element.to_string(),
-            Self::EmptyElement(element) => element.to_string(),
             Self::Text(text) => text.to_owned(),
             Self::Comment(comment) => format!("<!--{comment}-->"),
             Self::DocType(doctype) => format!("<!DOCTYPE {doctype}>"),

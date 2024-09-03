@@ -5,6 +5,3 @@ pub use item::*;
 
 mod element;
 pub use element::*;
-
-mod emptyelement;
-pub use emptyelement::*;

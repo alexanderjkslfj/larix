@@ -1,8 +1,8 @@
 use std::{collections::HashMap, fmt::Display};
 
-use crate::{EmptyElement, Item};
+use crate::Item;
 
-/** Element ```<tag attr="value">...</tag>```. */
+/** Element ```<tag attr="value">...</tag>``` or ```<tag attr="value" />```. */
 pub struct Element {
     /** Tag name of the element. */
     pub name: String,
@@ -10,6 +10,8 @@ pub struct Element {
     pub children: Vec<Item>,
     /** Attributes of the element. */
     pub attributes: HashMap<String, String>,
+    /** Whether to self-close if childless. */
+    pub self_closing: bool,
 }
 
 impl Element {
@@ -18,6 +20,7 @@ impl Element {
             name,
             children: Vec::new(),
             attributes: HashMap::new(),
+            self_closing: false,
         }
     }
 
@@ -60,24 +63,20 @@ impl Element {
 
 impl Display for Element {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let str = format!(
-            "{}{}{}",
-            get_start_tag(self),
-            Item::to_str(&self.children),
-            get_end_tag(self)
-        );
+        let str = if self.self_closing {
+            let mut str = get_start_tag(self);
+            str.insert_str(str.len() - 1, " /");
+            str
+        } else {
+            format!(
+                "{}{}{}",
+                get_start_tag(self),
+                Item::to_str(&self.children),
+                get_end_tag(self)
+            )
+        };
 
         write!(f, "{str}")
-    }
-}
-
-impl From<EmptyElement> for Element {
-    fn from(value: EmptyElement) -> Self {
-        Element {
-            name: value.name,
-            attributes: value.attributes,
-            children: Vec::new(),
-        }
     }
 }
 
